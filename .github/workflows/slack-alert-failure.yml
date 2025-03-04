@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: 
       - "dev-lambda-deploy"
-      - "prod-lambda-deploy"
+      # - "prod-lambda-deploy"
     types:
       - completed
 
@@ -13,19 +13,25 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Set Slack webhook URL
-        id: set-webhook
+      - name: debug
         run: |
-          if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
-            echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_DEV }}" >> $GITHUB_ENV
-          elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
-            echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_PROD }}" >> $GITHUB_ENV
-          fi
+          echo "Slack Webhook URL: ${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
+          echo "Slack Webhook URL: ${{ secrets.GA_SLACK_WEBHOOK_PROD }}"
+          echo '${{ github.ref }}'
+    
+      # - name: Set Slack webhook URL
+      #   id: set-webhook
+      #   run: |
+      #     if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
+      #       echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_DEV }}" >> $GITHUB_ENV
+      #     elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
+      #       echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_PROD }}" >> $GITHUB_ENV
+      #     fi
 
-      - name: Send Slack notification (fail)
-        run: |
-          echo ${{ github.event.workflow_run.conclusion == 'failure' }}
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
-            Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
-            ${{ env.SLACK_WEBHOOK_URL }}
+      # - name: Send Slack notification (fail)
+      #   run: |
+      #     echo ${{ github.event.workflow_run.conclusion == 'failure' }}
+      #     curl -X POST -H 'Content-type: application/json' \
+      #       --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
+      #       Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
+      #       ${{ env.SLACK_WEBHOOK_URL }}
