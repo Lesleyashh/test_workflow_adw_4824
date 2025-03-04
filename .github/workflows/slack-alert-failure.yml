@@ -1,0 +1,29 @@
+name: slack-alert-failure
+
+on:
+  workflow_run:
+    workflows: 
+      - "dev-lambda-deploy"
+      - "prod-lambda-deploy"
+    types:
+      - completed
+
+jobs:
+  notify-slack:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification (fail)
+        run: |
+          echo ${{ github.event.workflow_run.conclusion == 'failure' }}
+          
+          if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
+            CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
+          elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
+            CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_PROD }}"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
+            Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
+            $CHANNEL
