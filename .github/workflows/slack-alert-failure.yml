@@ -23,7 +23,7 @@ jobs:
           if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
             echo "SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL_DEV }}" >> $GITHUB_ENV
           elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
-            echo "SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL_PROD }}"" >> $GITHUB_ENV
+            echo "SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL_PROD }}" >> $GITHUB_ENV
           fi
           
       - name: Send Slack notification (fail)
