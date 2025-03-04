@@ -11,26 +11,61 @@ on:
 jobs:
   notify-slack:
     runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK_URL_DEV: ${{ secrets.GA_SLACK_WEBHOOK_DEV }}
-      SLACK_WEBHOOK_URL_PROD: ${{ secrets.GA_SLACK_WEBHOOK_PROD }}
     steps:
-      - name: Set Slack Webhook URL
+      - name: Set Slack Webhook URL for the Workflow
         id: set-webhook
         run: |
-          # Check which workflow triggered the action and set the webhook URL accordingly
           if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
             echo "Using Slack Webhook for Dev environment"
-            echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_DEV }}" >> $GITHUB_ENV
+            echo "::set-output name=slack_webhook_url::${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
           elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
             echo "Using Slack Webhook for Prod environment"
-            echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_PROD }}" >> $GITHUB_ENV
+            echo "::set-output name=slack_webhook_url::${{ secrets.GA_SLACK_WEBHOOK_PROD }}"
           fi
 
       - name: Send Slack notification (fail)
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}  # Only run if previous workflow failed
         run: |
           echo "Sending Slack notification to the appropriate channel."
           curl -X POST -H 'Content-type: application/json' \
             --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
             Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
-            ${{ env.SLACK_WEBHOOK_URL }}
+            ${{ steps.set-webhook.outputs.slack_webhook_url }}
+
+
+# name: slack-alert-failure
+
+# on:
+#   workflow_run:
+#     workflows: 
+#       - "dev-lambda-deploy"
+#       - "prod-lambda-deploy"
+#     types:
+#       - completed
+
+# jobs:
+#   notify-slack:
+#     runs-on: ubuntu-latest
+#     env:
+#       SLACK_WEBHOOK_URL_DEV: ${{ secrets.GA_SLACK_WEBHOOK_DEV }}
+#       SLACK_WEBHOOK_URL_PROD: ${{ secrets.GA_SLACK_WEBHOOK_PROD }}
+#     steps:
+#       - name: Set Slack Webhook URL
+#         id: set-webhook
+#         run: |
+#           # Check which workflow triggered the action and set the webhook URL accordingly
+#           if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
+#             echo "Using Slack Webhook for Dev environment"
+#             echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_DEV }}" >> $GITHUB_ENV
+#           elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
+#             echo "Using Slack Webhook for Prod environment"
+#             echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_PROD }}" >> $GITHUB_ENV
+#           fi
+
+#       - name: Send Slack notification (fail)
+#         run: |
+#           echo "Sending Slack notification to the appropriate channel."
+#           curl -X POST -H 'Content-type: application/json' \
+#             --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
+#             Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
+#             ${{ env.SLACK_WEBHOOK_URL }}
