@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug workflow name
+        run: |
+          # Print the actual value of the workflow name
+          echo "Workflow name: ${{ github.event.workflow_run.workflow }}"
+        
       - name: Set and Debug Slack Webhook URL
         run: |
           # Debugging output to check which workflow triggered this job
