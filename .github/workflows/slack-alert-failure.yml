@@ -11,11 +11,8 @@ on:
 jobs:
   notify-slack:
     runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.GA_SLACK_WEBHOOK_DEV }}  # Define the environment variable for the Slack webhook
 
     steps:
-
       - name: Set Slack Webhook URL
         id: set-webhook
         run: |
@@ -28,7 +25,7 @@ jobs:
         run: |
           echo "Sending a static Slack message"
           curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
+            --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.head_ref }}' in the '${{ github.repository }}' repo.\
             Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
             $SLACK_WEBHOOK_URL  # Use the environment variable directly in the curl command
 
