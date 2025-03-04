@@ -18,4 +18,4 @@ jobs:
       - name: Simulate failed deployment
         run: |
           echo "Simulating failure..."
-          exit 1  # Fail the job
+          exit 1  # Fail the job.
