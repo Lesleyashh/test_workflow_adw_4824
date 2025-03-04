@@ -15,7 +15,7 @@ jobs:
       - name: Simulate successful deployment
         run: |
           echo "Deployment succeeded"
-      - name: Simulate failed deployment
-        run: |
-          echo "Simulating failure..."
-          exit 1  # Fail the job
+      # - name: Simulate failed deployment
+      #   run: |
+      #     echo "Simulating failure..."
+      #     exit 1  # Fail the job
