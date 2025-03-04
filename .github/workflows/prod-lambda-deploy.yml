@@ -1,0 +1,21 @@
+name: prod-lambda-deploy
+
+on:
+  push:
+    branches:
+      - "main"  # Trigger on push to the main branch.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Simulate successful deployment
+        run: |
+          echo "Deployment succeeded"
+      # - name: Simulate failed deployment
+      #   run: |
+      #     echo "Simulating failure..."
+      #     exit 1  # Fail the job
