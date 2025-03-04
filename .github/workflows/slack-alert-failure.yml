@@ -13,20 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step to determine the Slack Webhook URL dynamically and send notification
-      - name: Send Slack notification
+      - name: Set and Debug Slack Webhook URL
         run: |
+          # Debugging output to check which workflow triggered this job
+          echo "Triggered by workflow: ${{ github.event.workflow_run.workflow }}"
+
+          # Assign the correct Slack Webhook URL based on the workflow name
           if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
             SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_DEV }}
+            echo "Using dev webhook URL: $SLACK_WEBHOOK_URL"
           elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
             SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_PROD }}
+            echo "Using prod webhook URL: $SLACK_WEBHOOK_URL"
+          else
+            echo "Unknown workflow name, cannot determine Slack Webhook URL"
           fi
 
-          # Send the Slack message with the correct URL
+          # Ensure the SLACK_WEBHOOK_URL is not empty
+          if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
+            echo "ERROR: SLACK_WEBHOOK_URL is empty. Cannot send Slack message."
+            exit 1
+          fi
+
+          # Send the Slack message
+          echo "Sending message to Slack..."
           curl -X POST -H 'Content-type: application/json' \
             --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.head_ref }}' in the '${{ github.repository }}' repo.\
             Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
-            $SLACK_WEBHOOK_URL  # Use the dynamically set Slack webhook URL
+            $SLACK_WEBHOOK_URL
 
 # name: slack-alert-failure
 
