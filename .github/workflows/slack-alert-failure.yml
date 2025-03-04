@@ -18,6 +18,13 @@ jobs:
           echo "Slack Webhook URL: ${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
           echo "Slack Webhook URL: ${{ secrets.GA_SLACK_WEBHOOK_PROD }}"
           echo '${{ github.ref }}'
+      - name: Verify Slack Webhook Secret
+        run: |
+            if [ -z "${{ secrets.GA_SLACK_WEBHOOK_DEV }}" ]; then
+              echo "Slack Webhook Secret for DEV is not set."
+            else
+              echo "Slack Webhook Secret for DEV is set."
+            fi
     
       # - name: Set Slack webhook URL
       #   id: set-webhook
