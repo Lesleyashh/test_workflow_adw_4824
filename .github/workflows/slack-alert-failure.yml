@@ -11,17 +11,22 @@ on:
 jobs:
   notify-slack:
     runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL_DEV: ${{ secrets.GA_SLACK_WEBHOOK_DEV }}  # Define the environment variable for the Slack webhook
+      SLACK_WEBHOOK_URL_PRD: ${{ secrets.GA_SLACK_WEBHOOK_PROD }}  
 
     steps:
+
       - name: Set Slack Webhook URL
         id: set-webhook
         run: |
           if [[ "${{ github.event.workflow_run.workflow }}" == "dev-lambda-deploy" ]]; then
-            echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_DEV }}" >> $GITHUB_ENV
+            echo "SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL_DEV }}" >> $GITHUB_ENV
           elif [[ "${{ github.event.workflow_run.workflow }}" == "prod-lambda-deploy" ]]; then
-            echo "SLACK_WEBHOOK_URL=${{ secrets.GA_SLACK_WEBHOOK_PROD }}" >> $GITHUB_ENV
+            echo "SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL_PROD }}"" >> $GITHUB_ENV
           fi
-      - name: Send static Slack notification
+          
+      - name: Send Slack notification (fail)
         run: |
           echo "Sending a static Slack message"
           curl -X POST -H 'Content-type: application/json' \
