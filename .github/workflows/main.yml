@@ -16,54 +16,10 @@ on:
 jobs:
 
   run-tests:
-    # Run tests only when you open 
     if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action =='reopened' }}
     runs-on: ubuntu-latest
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      #   with:
-      #     persist-credentials: false # The default credentials are not valid for pushing
-      # - uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.9'
-      #     cache: 'pipenv'
-      #     cache-dependency-path: |
-      #       Pipfile.lock
-      # - name: Install pipenv & requirements
-      #   run: make setup
-      # - name: Run Tests
-      #   run: make tests
       - name: Simulate deployment failure (for testing)
         run: |
           echo "Simulating failure..."
           exit 1  # This will cause the job to fail
-
-  # This workflow contains a single job called "build"
-  # build:
-  #   if:  ${{ github.event.schedule || github.event_name == 'workflow_dispatch' }}
-  #   # The type of runner that the job will run on
-  #   runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    # steps:
-    #   - id: get-token
-    #     uses: sainsburys-tech/github-token-action@v0.1.2
-    #   - name: Checkout
-    #     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    #     with:
-    #       persist-credentials: false # The default credentials are not valid for pushing
-    #   - uses: actions/setup-python@v4
-    #     with:
-    #       python-version: '3.9'
-    #       cache: 'pipenv'
-    #       cache-dependency-path: |
-    #         Pipfile.lock
-    #   - name: Install pipenv & requirements
-    #     run: make setup
-    #   - name: Run Barbossa Policy/Role update
-    #     run: |
-    #       make run
-    #     env:
-    #       GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
-    #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
