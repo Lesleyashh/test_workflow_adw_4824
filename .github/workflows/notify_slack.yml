@@ -1,4 +1,4 @@
-name: slack-alert-failure
+name: notify-slack
 
 on:
   workflow_run:
