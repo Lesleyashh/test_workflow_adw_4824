@@ -15,10 +15,10 @@ jobs:
       - name: Send Slack notification (fail)
         run: |
           echo ${{ github.event.workflow_run.conclusion == 'failure' }}
-          echo ${{ github.event.workflow_run.head_branch }}
-          if [[ "${{ github.event.workflow_run.head_branch }}" == "develop" ]]; then
+          echo ${{ github.event.pull_request.base.ref }}
+          if [[ "${{ github.event.pull_request.base.ref }}" == "develop" ]]; then
             CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
-          elif [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
             CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_PROD }}"
           fi
 
