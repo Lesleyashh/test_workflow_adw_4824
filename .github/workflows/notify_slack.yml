@@ -1,10 +1,9 @@
-name: notify-slack
+name: slack-alert-failure
 
 on:
   workflow_run:
-    workflows: 
-      - "dev-lambda-deploy"
-      - "prod-lambda-deploy"
+    workflows:
+      - "Orange Barbossa Refresh"
     types:
       - completed
 
@@ -16,10 +15,10 @@ jobs:
       - name: Send Slack notification (fail)
         run: |
           echo ${{ github.event.workflow_run.conclusion == 'failure' }}
-          
-          if [[ "${{ github.event.workflow_run.name }}" == "dev-lambda-deploy" ]]; then
+          echo ${{ github.event.workflow_run.head_branch }}
+          if [[ "${{ github.event.workflow_run.head_branch }}" == "develop" ]]; then
             CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
-          elif [[ "${{ github.event.workflow_run.name }}" == "prod-lambda-deploy" ]]; then
+          elif [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
             CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_PROD }}"
           fi
 
