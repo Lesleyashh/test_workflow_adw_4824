@@ -24,6 +24,6 @@ jobs:
           fi
 
           curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.ref }}' in the '${{ github.repository }}' repo.\
+            --data "{\"text\":\":warning: Build failed on commit to branch '${{ github.event.workflow_run.head_commit.ref }}' in the '${{ github.repository }}' repo.\
             Check the details here: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'\"}" \
             $CHANNEL
