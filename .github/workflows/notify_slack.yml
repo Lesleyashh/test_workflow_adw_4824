@@ -16,6 +16,8 @@ jobs:
         run: |
           echo ${{ github.event.workflow_run.conclusion == 'failure' }}
           echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.workflow_run.pull_requests }}
+          
           if [[ "${{ github.event.pull_request.base.ref }}" == "develop" ]]; then
             CHANNEL="${{ secrets.GA_SLACK_WEBHOOK_DEV }}"
           elif [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
